@@ -27,13 +27,13 @@ public class SecurityController {
 		System.out.println("Admin 요청입니다.");
 	}
 
-//	@GetMapping("/login")
-//	public void login() {
-//	}
+	@GetMapping("/login")
+	public void login() {
+	}
 
-//	@GetMapping("/loginSuccess")
-//	public void loginSuccess() {
-//	}
+	@GetMapping("/loginSuccess")
+	public void loginSuccess() {
+	}
 	
 //	@GetMapping("/accessDenied")
 //	public void accessDenied() {		
