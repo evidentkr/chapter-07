@@ -1,5 +1,7 @@
 package com.rubypaper.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +40,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //	}
 	
 	//메모리 임시 로그인 -  콘솔에 찍힌 패스워드 말고 로그인 가능
+//	@Autowired
+//	public void authenticate(AuthenticationManagerBuilder auth) throws Exception{
+//		auth.inMemoryAuthentication()
+//		.withUser("manager")
+//		.password("{noop}manager123")
+//		.roles("MANAGER");
+//		
+//		auth.inMemoryAuthentication()
+//		.withUser("admin")
+//		.password("{noop}admin123")
+//		.roles("ADMIN");
+//	}
+	
+	//437 데이터베이스를 이용한 로그인
+//	DROP TABLE MEMBER;
+//	CREATE TABLE MEMBER(
+//		ID VARCHAR2(10) PRIMARY KEY,
+//		PASSWORD VARCHAR2(100),
+//		NAME VARCHAR2(30),
+//		ROLE VARCHAR2(12),
+//		ENABLED BOOLEAN
+//	);
+//	INSERT INTO MEMBER VALUES('member','member123','회원','ROLE_MEMBER',TRUE);
+//	INSERT INTO MEMBER VALUES('manager','manager123','매니저','ROLE_MANAGER',TRUE);
+//	INSERT INTO MEMBER VALUES('admin','admin123','어드민','ROLE_ADMIN',TRUE);
+//	COMMIT;
+	@Autowired
+	private DataSource dataSource;
+	
 	@Autowired
 	public void authenticate(AuthenticationManagerBuilder auth) throws Exception{
-		auth.inMemoryAuthentication()
-		.withUser("manager")
-		.password("{noop}manager123")
-		.roles("MANAGER");
+		String query1 = "select id username, concat('{noop}', password) password, true enabled from member where id=?";
+		String query2 = "select id, role from member where id=?";
 		
-		auth.inMemoryAuthentication()
-		.withUser("admin")
-		.password("{noop}admin123")
-		.roles("ADMIN");
+		auth.jdbcAuthentication()
+		.dataSource(dataSource)
+		.usersByUsernameQuery(query1)
+		.authoritiesByUsernameQuery(query2);
+		
 	}
 
 }
